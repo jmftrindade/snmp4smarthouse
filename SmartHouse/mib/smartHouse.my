@@ -1,0 +1,104 @@
+-- File Name : TESTE2-MIB.txt
+-- Date      : Thu Mar 07 11:20:41 BRT 2002
+-- Author    : AdventNet Agent Toolkit (Java Edition) - MibEditor 4.2
+
+SMARTHOUSE      DEFINITIONS ::= BEGIN
+        IMPORTS
+                DisplayString
+                        FROM SNMPv2-TC
+                OBJECT-TYPE
+                        FROM RFC-1212
+                enterprises
+                        FROM RFC1155-SMI;
+
+        smartHouse      OBJECT IDENTIFIER
+                ::=  {  enterprises  7754  }
+
+        shSmokeDetected OBJECT-TYPE     
+                SYNTAX                  INTEGER  { true ( 1 ) , false ( 2 ) }
+                ACCESS                  read-only
+                STATUS                  mandatory
+                DESCRIPTION             "Boolean whether smoke has been detected or not."
+                ::=  {  smartHouse  1  }     
+                
+        shIsOnTheFloor  OBJECT-TYPE     
+                SYNTAX                  INTEGER  { true ( 1 ) , false ( 2 ) }
+                ACCESS                  read-only
+                STATUS                  mandatory
+                DESCRIPTION             "Boolean whether the elder person is on the floor (e.g., person has fainted and needs medical assistance)."
+                ::=  {  smartHouse  2  }
+
+        shAirCondTemperature    OBJECT-TYPE     
+                SYNTAX                  INTEGER  ( 15 .. 30 )
+                ACCESS                  read-write
+                STATUS                  mandatory
+                DESCRIPTION             "Current air conditioner temperature in the smart house, in Celsius degrees."
+                ::=  {  smartHouse  3  }
+                
+        shFridgeTemperature     OBJECT-TYPE     
+                SYNTAX                  INTEGER    ( -20 .. 0 )
+                ACCESS                  read-write 
+                STATUS                  mandatory
+                DESCRIPTION             "Current fridge temperature in the smart house, in Celsius degrees.."
+                ::=  {  smartHouse  4  }
+
+        shCurrentLocation       OBJECT-TYPE     
+                SYNTAX                  DisplayString  ( SIZE ( 0 .. 255  ) ) 
+                ACCESS                  read-only
+                STATUS                  mandatory
+                DESCRIPTION             "Current location of the elder person in the smart house. Format is -XX:-YY, where XX represents latitude and YY represents longitude."
+                ::=  {  smartHouse  5  }
+
+        shAirCondStatus OBJECT-TYPE     
+                SYNTAX                  INTEGER  { off ( 1 ) , on ( 2 ) } 
+                ACCESS                  read-only
+                STATUS                  mandatory
+                DESCRIPTION             "Air conditioner status. Off (1) or On (2)."
+                ::=  {  smartHouse  6  }
+                
+
+        shFridgeProdTable       OBJECT-TYPE
+                SYNTAX          SEQUENCE  OF  ShFridgeProdEntry
+                ACCESS          not-accessible
+                STATUS          mandatory
+                DESCRIPTION     "Table containing current products stored in the fridge."
+                ::=  { smartHouse  7 }
+
+        shFridgeProdEntry       OBJECT-TYPE
+                SYNTAX          ShFridgeProdEntry
+                ACCESS          not-accessible
+                STATUS          mandatory
+                DESCRIPTION     "Food or drink product stored in the fridge."
+                INDEX           {  shFridgeProdTableProdId  }
+                ::=  { shFridgeProdTable 1 }
+                      
+        ShFridgeProdEntry  ::=  SEQUENCE {    
+            shFridgeProdTableProdId   INTEGER,
+                shFridgeProdTableProdName  DisplayString,
+                shFridgeProdTableProdExpDate  DisplayString
+        }
+   
+        shFridgeProdTableProdId OBJECT-TYPE     
+                SYNTAX                  INTEGER
+                ACCESS                  read-only
+                STATUS                  mandatory
+                DESCRIPTION             "Product id."
+                ::=  {  shFridgeProdEntry  1  }
+
+        shFridgeProdTableProdName       OBJECT-TYPE     
+                SYNTAX                  DisplayString
+                ACCESS                  read-only
+                STATUS                  mandatory
+                DESCRIPTION             "Product name."
+                ::=  {  shFridgeProdEntry  2  }
+
+
+        shFridgeProdTableProdExpDate    OBJECT-TYPE     
+                SYNTAX                  DisplayString
+                ACCESS                  read-only
+                STATUS                  mandatory
+                DESCRIPTION             "Product expiration date."
+                ::=  {  shFridgeProdEntry  3  }
+
+
+END
